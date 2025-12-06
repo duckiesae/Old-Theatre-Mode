@@ -1,14 +1,14 @@
 # Old Theatre Mode for YouTube
 
-A lightweight and high-performance browser extension that restores the classic, centralized YouTube layout for video watch pages, moving the "Related Videos" (Secondary Column) back below the "Comments" section.
+A lightweight browser extension that restores the classic, centralized YouTube theatre layout for video watch pages, moving the "Related Videos" back next to the "Comments" section.
 
 ## Motivation
 
-The modern YouTube theater mode often leaves excessive empty space on wider screens and separates the video description from the comments. This extension aims to:
+The modern YouTube theater mode doesnt let you scroll and read comments at the same time. This extension aims to:
 
 1.  Center the primary content (Video, Description, Comments) to improve reading flow.
-2.  Move the **Related Videos column** (Secondary Column) to the bottom of the page, beneath the comments section.
-3.  Ensure **optimal performance** by using pure CSS for layout fixes.
+2.  Move the **Related Videos column** to the right of the page, next to the comments section.
+
 
 ## Installation & Usage
 
@@ -37,12 +37,6 @@ This extension uses a minimalist approach to modify the YouTube DOM (Document Ob
 | `manifest.json` | Configuration | Defines the extension name, version, and injects `content.js` early (`"run_at": "document_start"`). |
 | `popup.html`/`.js` | UI | Provides the interface to toggle the mode and manage the default setting stored using the `storage` API. |
 | `content.js` | Logic & Styling | Injects a block of highly-prioritized CSS to override YouTube's Flexbox and Grid structure, forcing the desired centralized layout. |
-
-### Layout Fixes Achieved
-
-* The main content container (`ytd-watch-flexy`) is constrained and centered.
-* The primary column (`#primary`) and secondary column (`#secondary`) are stacked vertically within the main flow using CSS **`display: flex`** and **`order`** properties.
-* The video description (`#below-the-fold`) is correctly placed *above* the comments section.
 
 ## Contributing
 
