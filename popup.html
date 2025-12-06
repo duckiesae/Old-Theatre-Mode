@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      /* --- Global Styles & Dark Theme (Sleek Version) --- */
+      body { 
+        width: 220px;
+        padding: 15px; 
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        background-color: #1a1a1a; 
+        color: #e0e0e0; 
+        border-radius: 8px;
+      }
+
+      /* --- Title --- */
+      h3 {
+        margin-top: 0;
+        margin-bottom: 15px;
+        font-size: 1.2em;
+        font-weight: 600;
+        color: #ff4d4d; /* Bright red accent for title */
+        border-bottom: 1px solid #333;
+        padding-bottom: 8px;
+      }
+
+      /* --- Buttons --- */
+      button { 
+        width: 100%; 
+        padding: 12px; 
+        margin: 8px 0; 
+        font-size: 14px;
+        font-weight: 600;
+        border: none; 
+        border-radius: 6px; 
+        cursor: pointer; 
+        transition: background-color 0.2s, transform 0.1s;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      }
+
+      /* Activate Button - Primary Action */
+      #activateButton {
+        background: #ff4d4d; 
+        color: white; 
+      }
+      #activateButton:hover { 
+        background: #cc0000; 
+        transform: translateY(-1px);
+      }
+
+      /* Deactivate Button - Secondary Action */
+      #deactivateButton {
+        background: #333; 
+        color: #e0e0e0; 
+      }
+      #deactivateButton:hover { 
+        background: #555; 
+        transform: translateY(-1px);
+      }
+
+      /* --- Checkbox / Settings --- */
+      .setting-row {
+        margin: 15px 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+      }
+      
+      /* Custom Checkbox Styling */
+      input[type="checkbox"] {
+        appearance: none;
+        width: 16px;
+        height: 16px;
+        border: 2px solid #ff4d4d;
+        border-radius: 4px;
+        cursor: pointer;
+        outline: none;
+        position: relative;
+        flex-shrink: 0;
+      }
+
+      input[type="checkbox"]:checked {
+        background-color: #ff4d4d;
+        border-color: #ff4d4d;
+      }
+
+      input[type="checkbox"]:checked::after {
+        content: '✓';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 12px;
+        font-weight: bold;
+      }
+
+      /* --- Status Bar --- */
+      .status { 
+        display: block;
+        padding-top: 10px;
+        margin-top: 15px; 
+        font-size: 0.9em;
+        color: #999; 
+        border-top: 1px solid #333;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h3>Old Theatre Mode</h3>
+
+    <button id="activateButton">Activate Theatre Mode</button>
+    <button id="deactivateButton">Revert to Default</button>
+
+    <div class="setting-row">
+      <label for="defaultSetting">
+        Apply as default
+      </label>
+      <input type="checkbox" id="defaultSetting" /> 
+    </div>
+    
+    <span class="status" id="status">Ready</span>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
