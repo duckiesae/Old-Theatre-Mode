@@ -1,0 +1,14 @@
+# Common System/OS Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Common Editor/IDE files
+*.sublime-workspace
+.vscode/
+
+# Browser/Extension Specific Files
+# Files generated when packaging the extension
+*.zip
+*.crx
+*.pem
