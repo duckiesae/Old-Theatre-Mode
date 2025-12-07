@@ -2,13 +2,19 @@
 
 A lightweight browser extension that restores the classic, centralized YouTube theatre layout for video watch pages, moving the "Related Videos" back next to the "Comments" section.
 
-![Screenshot of Extension in use on a YouTube Video Page](img/afterextension3.png)
+
+**BEFORE (left) / AFTER (right)**
+<p align="center">
+  <img src="beforeextension.png" width="45%" alt="Screenshot of Current Theater Mode in use on a YouTube Video Page">
+  &nbsp; &nbsp; &nbsp; 
+  <img src="img/afterextension3.png" width="45%" alt="Screenshot of Extension in use on a YouTube Video Page">
+</p>
+
 ## Motivation
+The Current Youtube Theater mode locks you into a basically fullscreen view, where scrolling will cover the video with recommendations rather than comments, and the description is hard to access. My goal with this project was to:
 
-The modern YouTube theater mode doesnt let you scroll and read comments at the same time. This extension aims to:
+Center the primary video, and put title/description/comments/recommended below to improve clutter & flow.
 
-1.  Center the primary content (Video, Description, Comments) to improve reading flow.
-2.  Move the **Related Videos column** to the right of the page, next to the comments section.
 
 
 ## Installation & Usage
