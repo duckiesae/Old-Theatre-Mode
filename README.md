@@ -2,7 +2,7 @@
 
 A lightweight browser extension that restores the classic, centralized YouTube theatre layout for video watch pages, moving the "Related Videos" back next to the "Comments" section.
 
-![Screenshot of Extension in use on a YouTube Video Page](img/afterextension.png)
+![Screenshot of Extension in use on a YouTube Video Page](img/afterextension3.png)
 ## Motivation
 
 The modern YouTube theater mode doesnt let you scroll and read comments at the same time. This extension aims to:
