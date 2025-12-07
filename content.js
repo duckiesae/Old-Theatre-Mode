@@ -115,6 +115,12 @@ ytd-watch-flexy[custom-wide] #below-the-fold #below-the-fold-container {
     box-sizing: border-box !important;
 }
 
+/* Hide the Theater Mode button completely */
+ytd-watch-flexy[custom-wide] .ytp-size-button {
+    display: none !important;
+}
+
+
 /* ================================
    FIX AI OVERVIEW + GAME NAME WIDTH
    ================================ */
@@ -242,6 +248,8 @@ function revertToDefault() {
     return true;
 }
 
+
+
 function activateCustomWideView() {
      const watchFlex = document.querySelector('ytd-watch-flexy');
      if (!watchFlex) return false;
@@ -251,7 +259,7 @@ function activateCustomWideView() {
      
      setTimeout(setSecondaryPosition, 100); 
      
-     watchFlex.removeAttribute('is-theater-mode'); 
+     
      document.body.style.overflow = '';
      document.documentElement.style.overflow = '';
      console.log("Custom Wide View: MODE ACTIVATED.");
@@ -262,6 +270,9 @@ function activateCustomWideView() {
 function deactivateCustomWideView() {
      return revertToDefault();
 }
+
+
+
 
 // --------------------------------------------
 // --- Popup Message Listener & Default Setting Check (Unmodified) ---
@@ -282,16 +293,103 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 async function checkDefaultSetting() {
     if (!window.location.href.includes('/watch')) return;
-    
+
+    // Safety check (fix for undefined browser.storage)
+    if (!browser || !browser.storage || !browser.storage.local) {
+        console.warn("Storage API not ready, retrying...");
+        setTimeout(checkDefaultSetting, 300);
+        return;
+    }
+
     try {
         const result = await browser.storage.local.get(["customWideModeDefault"]);
         if (result.customWideModeDefault) {
-            setTimeout(activateCustomWideView, 1000); 
+            setTimeout(activateCustomWideView, 1000);
         }
     } catch (error) {
         console.error("Error checking default setting:", error);
     }
 }
 
+
 checkDefaultSetting();
 window.addEventListener('yt-page-data-updated', checkDefaultSetting);
+
+// ----------------------------------------------------------
+// Disable custom-wide mode when entering Theater or Fullscreen
+// ----------------------------------------------------------
+// ----------------------------------------------------------
+// Disable custom-wide mode when entering Theater or Fullscreen
+// ----------------------------------------------------------
+// ------------------------------------------------------------------
+// Auto-disable custom mode for Theater Mode + Fullscreen
+function monitorPlayerModes() {
+	let lastPlayer = null;
+	let observer = null;
+
+	function attachObserver() {
+		const player = document.querySelector("#movie_player");
+		if (!player) return;
+
+		// Avoid re-attaching
+		if (lastPlayer === player) return;
+		lastPlayer = player;
+
+		if (observer) observer.disconnect();
+
+		observer = new MutationObserver(() => {
+			const isFullscreen = !!document.fullscreenElement || player.classList.contains("ytp-fullscreen");
+
+			if (isFullscreen) {
+				console.log("AUTO RESET: Fullscreen detected.");
+				deactivateCustomWideView();
+			} else {
+				// Reactivate if default is enabled
+				if (typeof browser !== "undefined" && browser.storage && browser.storage.local) {
+					browser.storage.local.get(["customWideModeDefault"]).then(result => {
+						if (result.customWideModeDefault) {
+							console.log("AUTO REACTIVATE: Fullscreen exited, normal mode detected.");
+							activateCustomWideView();
+						}
+					}).catch(err => console.error(err));
+				}
+			}
+		});
+
+		// Observe class changes for fullscreen
+		observer.observe(player, { attributes: true, attributeFilter: ["class"] });
+	}
+
+	// Listen for browser fullscreen events
+	document.addEventListener("fullscreenchange", () => {
+		const player = document.querySelector("#movie_player");
+		if (!player) return;
+
+		const isFullscreen = !!document.fullscreenElement || player.classList.contains("ytp-fullscreen");
+
+		if (isFullscreen) {
+			console.log("AUTO RESET: Fullscreen triggered.");
+			deactivateCustomWideView();
+		} else {
+			if (typeof browser !== "undefined" && browser.storage && browser.storage.local) {
+				browser.storage.local.get(["customWideModeDefault"]).then(result => {
+					if (result.customWideModeDefault) {
+						console.log("AUTO REACTIVATE: Fullscreen exited, normal mode detected.");
+						activateCustomWideView();
+					}
+				}).catch(err => console.error(err));
+			}
+		}
+	});
+
+	// Watch for DOM rebuilds (YouTube often replaces elements)
+	if (document.body instanceof Node) {
+		new MutationObserver(() => attachObserver()).observe(document.body, { childList: true, subtree: true });
+	}
+
+	// Initial attach
+	attachObserver();
+}
+
+// Run the monitor
+monitorPlayerModes();
