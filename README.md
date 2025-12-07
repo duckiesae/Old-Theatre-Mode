@@ -16,9 +16,10 @@ The modern YouTube theater mode doesnt let you scroll and read comments at the s
 ### Installation (Developer Mode)
 
 1.  **Download:** Clone this repository or download the source code as a ZIP file.
-2.  **Open Extensions:** Navigate to your browser's extensions page (e.g., `chrome://extensions` for Chrome/Edge).
-3.  **Enable Developer Mode:** Toggle the **"Developer mode"** switch on (usually in the top right corner).
-4.  **Load Extension:** Click **"Load unpacked"** and select the folder containing your `manifest.json` file.
+2.  **Files Needed** icons folder + files | popup.html | content.js | popup.js | manifest.json 
+3.  **Open Extensions:** Navigate to your browser's extensions page (e.g., `chrome://extensions` for Chrome/Edge).
+4.  **Enable Developer Mode:** Toggle the **"Developer mode"** switch on (usually in the top right corner).
+5.  **Load Extension:** Click **"Load unpacked"** and select the folder containing your `manifest.json` file.
 
 ### Usage
 
