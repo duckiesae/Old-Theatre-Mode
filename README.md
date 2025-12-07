@@ -48,7 +48,7 @@ This extension uses a minimalist approach to modify the YouTube DOM (Document Ob
 
 ## Contributing
 
-Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/YourGitHubUsernameOrHandle/old-theatre-mode/issues) or fork this repository to submit a Pull Request.
+Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/duckiesae/old-theatre-mode/issues) or fork this repository to submit a Pull Request.
 
 ## License
 
