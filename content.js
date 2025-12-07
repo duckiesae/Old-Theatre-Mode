@@ -11,34 +11,60 @@ const MARGIN_BOTTOM_PX = 16;
 // --- DOM Positioning Function (Unmodified) ---
 // ------------------------------------------------------------------
 
+function getScaleFactor(screenWidth) {
+    if (screenWidth >= 2560) {
+        return 1.03;
+    } else if (screenWidth > 1920) {
+        return 1.05 + ((2560 - screenWidth) / 9000); // Use same formula everywhere!
+    } else if (screenWidth === 1920) {
+        return 1.09 + ((2560 - screenWidth) / 6400); // Use same formula everywhere!
+    } else if (screenWidth >= 1600) {
+        return 1.15;
+    } else if (screenWidth >= 1366) {
+        return 1.22;
+    } else {
+        return 1.27;
+    }
+}
+
 function setSecondaryPosition() {
-    const playerContainer = document.querySelector("#player-container-inner");
+    const player = document.querySelector("#player");
     const secondary = document.querySelector("#secondary");
     const filterBar = secondary ? secondary.querySelector("ytd-rich-grid-renderer") : null;
     
-    if (playerContainer && secondary) {
-        const playerHeight = playerContainer.offsetHeight;
-        const playerControlBuffer = 50; 
-        const filterBarHeight = filterBar ? filterBar.offsetHeight + 8 : 0; 
+    if (player && secondary) {
+        // Get the actual visual bounds of the scaled player
+        const playerRect = player.getBoundingClientRect();
+        const playerBottom = playerRect.bottom;
         
-        const newTop = playerHeight + playerControlBuffer + MARGIN_BOTTOM_PX + filterBarHeight; 
+        // Calculate position relative to page top
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const absoluteBottom = playerBottom + scrollTop;
+        
+        const playerControlBuffer = 50; 
+        const filterBarHeight = filterBar ? filterBar.offsetHeight + 8 : 0;
+        
+        // Add a bit of extra spacing
+        const extraSpacing = -60; // Adjust this to fine-tune
+        
+        const newTop = absoluteBottom + playerControlBuffer + MARGIN_BOTTOM_PX + filterBarHeight + extraSpacing;
 
         secondary.style.position = 'absolute';
         secondary.style.top = `${newTop}px`;
         secondary.style.right = '0px'; 
         secondary.style.marginTop = '0'; 
 
-        console.log(`Secondary position set: top=${newTop}px (Player: ${playerHeight}px, Buffer: ${playerControlBuffer}px, Filter: ${filterBarHeight}px)`);
+        console.log(`Secondary positioned at ${newTop}px (Player bottom: ${absoluteBottom}px)`);
         return true;
     }
     return false;
 }
 
-
 // ------------------------------------------------------------------
 // --- Core Fix Functions (CSS: Final Metadata Constraint) ---
 // ------------------------------------------------------------------
 
+// For the title margin, slightly reduce the percentage for 1080p
 function applyCustomWideViewStyles() {
     const STYLE_ID = "custom-wide-view-styles";
     const existingStyle = document.getElementById(STYLE_ID);
@@ -46,9 +72,42 @@ function applyCustomWideViewStyles() {
         existingStyle.remove();
     }
 
+    const screenWidth = window.innerWidth;
+    const scaleValue = getScaleFactor(screenWidth);
+
+    const counterScale = 1 / scaleValue;
+    const compensateWidth = scaleValue * 100;
+    
+    // Calculate margin based on player height
+    const playerContainer = document.querySelector("#player-container-inner");
+    let marginBottom = 100; // Default fallback
+    
+    if (playerContainer) {
+        const playerHeight = playerContainer.offsetHeight;
+        const scaledPlayerHeight = playerHeight * scaleValue;
+        
+        // Adjust percentage based on screen size
+        // I HAVE NO CLUE WHAT IM DOING IM GOING INSANE WITH THIS SCALING SHIT
+        // NOTHING MAKES SENSE ANYMORE
+        let marginPercentage;
+        if (screenWidth >= 2560) {
+            marginPercentage = 0.20; // 1440p - keep at 10%
+        } else if (screenWidth > 1920) {
+            marginPercentage = 0.04; // Between 1440p and 1080p
+        } else if (screenWidth === 1920) {
+            marginPercentage = 0.06; // Between 1440p and 1080p
+        } else {
+            marginPercentage = 0.12; // 1080p and smaller - reduce to 8%
+        }
+        
+        marginBottom = Math.round((scaledPlayerHeight * marginPercentage) + 50);
+    }
+    
+    console.log(`Screen: ${screenWidth}px, Scale: ${scaleValue}, Margin: ${marginBottom}px`);
+
     const style = document.createElement("style");
     style.id = STYLE_ID;
-    
+     
     style.textContent = `
         /* 1. Global Scroll Fix & Layout Reset */
 html, body, ytd-app {
@@ -74,10 +133,22 @@ ytd-watch-flexy[custom-wide] #columns {
     padding-top: 0 !important;
 }
 
+ytd-watch-flexy[custom-wide] .ytp-chrome-bottom {
+    transform: scale(${counterScale}) !important;
+    transform-origin: left center !important;
+    width: 100% !important;
+}
+
+ytd-watch-flexy[custom-wide] #player {
+    transform: scale(${scaleValue}) !important;
+    transform-origin: top center !important;
+    margin-bottom: ${marginBottom}px !important;
+}
+
 /* ABOVE-THE-FOLD WIDTH FIX */
 ytd-watch-flexy[custom-wide] #above-the-fold {
-    width: 72% !important;
-    max-width: 72% !important;
+    width: 78% !important;
+    max-width: 78% !important;
     padding-left: 24px !important;
     padding-right: 32px !important;
     margin: 0 !important;
@@ -87,8 +158,8 @@ ytd-watch-flexy[custom-wide] #above-the-fold {
 
 /* BELOW-THE-FOLD WIDTH FIX */
 ytd-watch-flexy[custom-wide] #below-the-fold {
-    width: 72% !important;
-    max-width: 72% !important;
+    width: 78% !important;
+    max-width: 78% !important;
     padding-left: 24px !important;
     padding-right: 32px !important;
     margin: 0 !important;
@@ -128,8 +199,8 @@ ytd-watch-flexy[custom-wide] #always-shown,
 ytd-watch-flexy[custom-wide] #always-shown > *,
 ytd-watch-flexy[custom-wide] #expandable-metadata,
 ytd-watch-flexy[custom-wide] #expandable-metadata > * {
-    width: 72% !important;
-    max-width: 72% !important;
+    width: 78% !important;
+    max-width: 78% !important;
     padding-left: 24px !important;
     padding-right: 32px !important;
     margin: 0 !important;
@@ -138,8 +209,8 @@ ytd-watch-flexy[custom-wide] #expandable-metadata > * {
 
 /* COMMENTS WIDTH */
 ytd-watch-flexy[custom-wide] ytd-comments {
-    width: 72% !important;
-    max-width: 72% !important;
+    width: 78% !important;
+    max-width: 78% !important;
     padding-left: 24px !important;
     padding-right: 32px !important;
     margin: 0 !important;
@@ -154,8 +225,8 @@ ytd-watch-flexy[custom-wide] #description.ytd-watch-flexy {
 
 /* SECONDARY COLUMN */
 ytd-watch-flexy[custom-wide] #secondary {
-    width: 25% !important;
-    max-width: 25% !important;
+    width: 19% !important;
+    max-width: 19% !important;
     padding-top: 0 !important;
     display: block !important;
     visibility: visible !important;
@@ -189,8 +260,8 @@ ytd-watch-flexy[custom-wide] #movie_player {
 
 /* --- FIX: ID Chips width matches main content --- */
 ytd-watch-flexy[custom-wide] ytd-feed-filter-chip-bar-renderer {
-    width: 72% !important;
-    max-width: 72% !important;
+    width: 78% !important;
+    max-width: 78% !important;
     padding-left: 24px !important;
     padding-right: 32px !important;
     margin: 0 !important;
